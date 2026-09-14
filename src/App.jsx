@@ -24,13 +24,22 @@ import { RoleContext } from './features/auth/RoleContext'
 const pages = {
   overview: OverviewPage,
   reports: ReportsPage,
-  fares: FareMatrixPage,
+  fares: GeneralFarePage,
+  'tricycle-fares': TricycleFarePage,
   'train-fares': TrainFarePage,
   'route-suggestions': RouteSuggestionsPage,
   accounts: PassengerAccountsPage,
   passengers: PassengerAccountsPage,
   staff: StaffAccountsPage,
   'my-account': MyAccountPage,
+}
+
+function GeneralFarePage(props) {
+  return <FareMatrixPage {...props} fareScope="general" />
+}
+
+function TricycleFarePage(props) {
+  return <FareMatrixPage {...props} fareScope="tricycle" />
 }
 
 function PassengerAccountsPage(props) {

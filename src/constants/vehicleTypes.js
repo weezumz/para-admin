@@ -1,4 +1,4 @@
-export const DISTANCE_FARE_VEHICLE_TYPES = [1, 3, 4, 5, 7]
+export const DISTANCE_FARE_VEHICLE_TYPES = [3, 4, 5, 7]
 
 export const VEHICLE_TYPE_LABELS = {
   1: 'Tricycle',

@@ -42,12 +42,18 @@ async function getAttentionRows(table, select, statuses) {
   return { rows: data ?? [], error }
 }
 
-async function getDistanceFareCount() {
-  const { count, error } = await supabase
-    .from('distance_fares')
-    .select('fare_id', { count: 'exact', head: true })
+async function getDistanceFareCompletion() {
+  const [general, tricycle, routes] = await Promise.all([
+    supabase.from('distance_fares').select('fare_id', { count: 'exact', head: true }),
+    supabase.from('tricycle_route_fares').select('fare_id', { count: 'exact', head: true }),
+    supabase.from('routes').select('route_id', { count: 'exact', head: true }).eq('route_type', 1),
+  ])
 
-  return { count: count ?? 0, error }
+  return {
+    count: (general.count ?? 0) + (tricycle.count ?? 0),
+    expected: EXPECTED_DISTANCE_FARES + (routes.count ?? 0) * FARE_TYPES.length,
+    error: general.error || tricycle.error || routes.error,
+  }
 }
 
 async function getTrainFareCompletion() {
@@ -90,7 +96,7 @@ export async function getOverviewMetrics() {
       'id, created_at, route_name, vehicle_type, status, start_latitude, start_longitude, end_latitude, end_longitude',
       SUGGESTION_ATTENTION_STATUSES,
     ),
-    getDistanceFareCount(),
+    getDistanceFareCompletion(),
     getTrainFareCompletion(),
   ])
 
@@ -121,7 +127,7 @@ export async function getOverviewMetrics() {
       },
       distanceFares: {
         configured: fares.count,
-        expected: EXPECTED_DISTANCE_FARES,
+        expected: fares.expected,
         error: fares.error,
       },
       trainFares: {

@@ -918,6 +918,21 @@ button.overview-card:focus-visible {
   gap: 0 16px;
 }
 
+.form-grid-wide {
+  grid-column: 1 / -1;
+}
+
+.fare-route-name {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.fare-route-name small {
+  color: #67727d;
+  font-size: 11px;
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;

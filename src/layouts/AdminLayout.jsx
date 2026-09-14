@@ -11,9 +11,12 @@ const mobileQuery = '(max-width: 1024px)'
 const navItems = [
   ['overview', 'Overview'],
   ['reports', 'Reports'],
-  ['fares', 'Fare Matrix'],
-  ['train-fares', 'Train Fare'],
-  ['route-suggestions', 'Route Suggestions'],
+]
+
+const fareTabs = [
+  ['fares', 'General Fares'],
+  ['tricycle-fares', 'Tricycle Fares'],
+  ['train-fares', 'Train Fares'],
 ]
 
 const userTabs = [
@@ -29,11 +32,26 @@ function readCollapsed() {
   }
 }
 
+function readMenuOpen(key, activeByDefault) {
+  try {
+    const saved = window.sessionStorage.getItem(key)
+    return saved === null ? activeByDefault : saved === 'true' || activeByDefault
+  } catch {
+    return activeByDefault
+  }
+}
+
 function AdminLayout({ userEmail, onSignOut, activeTab, onTabChange, children, editorPanel }) {
   const role = useStaffRole()
   const [collapsed, setCollapsed] = useState(readCollapsed)
   const [isMobile, setIsMobile] = useState(() => window.matchMedia(mobileQuery).matches)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [faresOpen, setFaresOpen] = useState(() =>
+    readMenuOpen(
+      'para-fare-management-open',
+      fareTabs.some(([tab]) => tab === activeTab),
+    ),
+  )
   const [usersOpen, setUsersOpen] = useState(() =>
     ['accounts', ...userTabs.map(([tab]) => tab)].includes(activeTab),
   )
@@ -123,6 +141,29 @@ function AdminLayout({ userEmail, onSignOut, activeTab, onTabChange, children, e
     setUsersOpen((current) => !current)
   }
 
+  function toggleFares() {
+    if (compact) {
+      setCollapsed(false)
+      setFaresOpen(true)
+      try {
+        window.localStorage.setItem('para-sidebar-collapsed', 'false')
+        window.sessionStorage.setItem('para-fare-management-open', 'true')
+      } catch {
+        /* Preference persistence is optional. */
+      }
+      return
+    }
+    setFaresOpen((current) => {
+      const next = !current
+      try {
+        window.sessionStorage.setItem('para-fare-management-open', String(next))
+      } catch {
+        /* Preference persistence is optional. */
+      }
+      return next
+    })
+  }
+
   return (
     <div
       className={`admin-shell ${editorPanel ? 'has-editor-panel' : ''} ${compact ? 'sidebar-is-collapsed' : ''} ${drawerOpen ? 'sidebar-drawer-open' : ''}`}
@@ -197,6 +238,59 @@ function AdminLayout({ userEmail, onSignOut, activeTab, onTabChange, children, e
                 <span className="nav-label">{label}</span>
               </button>
             ))}
+          {canAccessTab(role, 'fares') && (
+            <div className="nav-group">
+              <button
+                className={`nav-item nav-group-toggle ${fareTabs.some(([tab]) => activeTab === tab) ? 'section-active' : ''}`}
+                type="button"
+                aria-label="Fare Management"
+                aria-expanded={!compact && faresOpen}
+                aria-controls="fare-management-navigation"
+                title={compact ? 'Fare Management' : undefined}
+                onClick={toggleFares}
+              >
+                <NavigationIcon name="fares" />
+                <span className="nav-label">Fare Management</span>
+                <span className={`nav-group-chevron ${faresOpen ? 'open' : ''}`}>
+                  <NavigationIcon name="chevron" />
+                </span>
+              </button>
+              {!compact && faresOpen && (
+                <div
+                  id="fare-management-navigation"
+                  className="nav-submenu"
+                  aria-label="Fare Management"
+                >
+                  {fareTabs.map(([tab, label]) => (
+                    <button
+                      key={tab}
+                      className={`nav-item nav-subitem ${activeTab === tab ? 'active' : ''}`}
+                      type="button"
+                      aria-label={label}
+                      aria-current={activeTab === tab ? 'page' : undefined}
+                      onClick={() => navigate(tab)}
+                    >
+                      <NavigationIcon name={tab} />
+                      <span className="nav-label">{label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+          {canAccessTab(role, 'route-suggestions') && (
+            <button
+              className={`nav-item ${activeTab === 'route-suggestions' ? 'active' : ''}`}
+              type="button"
+              aria-label="Route Suggestions"
+              aria-current={activeTab === 'route-suggestions' ? 'page' : undefined}
+              title={compact ? 'Route Suggestions' : undefined}
+              onClick={() => navigate('route-suggestions')}
+            >
+              <NavigationIcon name="route-suggestions" />
+              <span className="nav-label">Route Suggestions</span>
+            </button>
+          )}
           {canAccessTab(role, 'passengers') && (
             <div className="nav-group">
               <button

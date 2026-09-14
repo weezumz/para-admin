@@ -1,5 +1,12 @@
 export const STAFF_ROLES = ['admin', 'editor', 'operator']
-export const OPERATION_TABS = ['overview', 'reports', 'fares', 'train-fares', 'route-suggestions']
+export const OPERATION_TABS = [
+  'overview',
+  'reports',
+  'fares',
+  'tricycle-fares',
+  'train-fares',
+  'route-suggestions',
+]
 
 export function canAccessTab(role, tab) {
   if (!STAFF_ROLES.includes(role)) return false

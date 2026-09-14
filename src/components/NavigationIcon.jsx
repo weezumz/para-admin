@@ -2,6 +2,12 @@ const paths = {
   overview: ['M3 10 12 3l9 7', 'M5 9v12h5v-7h4v7h5V9'],
   reports: ['M6 3h12v18H6z', 'M9 7h6M9 11h6M9 15h3'],
   fares: ['M3 6h18v12H3z', 'M7 6v3H3M17 18v-3h4', 'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6'],
+  'tricycle-fares': [
+    'M5 15h14l-1.5-5h-11Z',
+    'M8 15v2M16 15v2',
+    'M7 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM17 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z',
+    'M12 10V6h4',
+  ],
   'train-fares': [
     'M7 3h10a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z',
     'M5 10h14M12 3v7M8 14h.01M16 14h.01M8 18l-2 3M16 18l2 3',
